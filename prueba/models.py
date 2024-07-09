@@ -12,23 +12,19 @@ class Empresa(models.Model):
         return self.nombre
 
 class Cliente(models.Model):
-    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, db_column='empresa')
-    cliente = models.IntegerField(primary_key=True)
-    tipo = models.CharField(max_length=1, choices=[('C', 'Cedula'), ('N', 'NIT'), ('E', 'Extranjero')])
-    nombre = models.CharField(max_length=255)
-    telefono = models.CharField(max_length=50)
-    correo = models.EmailField()
-    direccion = models.CharField(max_length=255)
-    paginaweb = models.CharField(max_length=255)
-    fecha_creacion = models.DateTimeField()
-    estado = models.CharField(max_length=1, choices=[('A', 'Activo'), ('I', 'Inactivo')])
+    id_cliente = models.BigIntegerField(primary_key=True, db_column='ID_CLIENTE')
+    tipo = models.CharField(max_length=1, db_column='TIPO')
+    nombre = models.CharField(max_length=255, db_column='NOMBRE')
+    telefono = models.CharField(max_length=50, db_column='TELEFONO')
+    correo = models.CharField(max_length=255, db_column='CORREO')
+    direccion = models.CharField(max_length=255, db_column='DIRECCION')
+    paginaweb = models.CharField(max_length=255, db_column='PAGINAWEB', blank=True)
+    fecha_creacion = models.DateTimeField(db_column='FECHA_CREACION')
+    estado = models.CharField(max_length=1, db_column='ESTADO')
+    empresa = models.IntegerField(db_column='EMPRESA')
 
     class Meta:
-        db_table = 'CLIENTES'  # Use the actual table name
-        unique_together = (('empresa', 'cliente'),)
-
-    def __str__(self):
-        return self.nombre
+        db_table = 'CLIENTES'
 
 class Producto(models.Model):
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, db_column='empresa')
@@ -47,21 +43,21 @@ class Producto(models.Model):
         return self.nombre
 
 class MaeFactura(models.Model):
-    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, db_column='EMPRESA')
-    id_factura = models.CharField(max_length=50, primary_key=True, db_column='ID_FACTURA')
-    numero = models.CharField(max_length=50, db_column='NUMERO')
+    empresa = models.ForeignKey('Empresa', on_delete=models.CASCADE, db_column='EMPRESA')
+    id_factura = models.AutoField(primary_key=True, db_column='ID_FACTURA')
+    numero = models.IntegerField(db_column='NUMERO')
     fecha_factura = models.DateTimeField(db_column='FECHA_FACTURA')
-    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, db_column='ID_CLIENTE')
+    id_cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, db_column='ID_CLIENTE')
     observaciones = models.TextField(db_column='OBSERVACIONES', blank=True, null=True)
     total = models.DecimalField(max_digits=10, decimal_places=2, db_column='TOTAL')
-    fecha_auditoria = models.DateTimeField(db_column='FECHA_AUDITORIA')
+    fecha_auditoria = models.DateTimeField(db_column='FECHA_AUDITORIA', auto_now_add=True)
 
     class Meta:
         db_table = 'MAE_FACTURA'
-        unique_together = (('empresa', 'id_factura'),)
+        unique_together = (('empresa', 'numero'),)
 
     def __str__(self):
-        return self.id_factura
+        return str(self.id_factura)
 
 class DetFactura(models.Model):
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, db_column='EMPRESA')  # Adjusted for actual column name
