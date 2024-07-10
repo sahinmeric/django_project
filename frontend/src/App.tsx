@@ -7,12 +7,13 @@ import FacturaList from "./components/FacturaList";
 import NewFactura from "./components/NewFactura";
 import FacturaDetail from "./components/FacturaDetail";
 import EditFactura from "./components/EditFactura";
+import MainPage from "./components/MainPage";
 
 const App: React.FC = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<EmpresaList />} />
+        <Route path="/" element={<MainPage />} />
         <Route path="/empresas" element={<EmpresaList />} />
         <Route path="/clientes" element={<ClienteCatalog />} />
         <Route path="/productos" element={<ProductoCatalog />} />
