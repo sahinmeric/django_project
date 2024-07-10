@@ -2,6 +2,9 @@ from django.shortcuts import render
 
 # Create your views here.
 from rest_framework import viewsets
+from rest_framework.views import APIView
+from django.shortcuts import get_list_or_404
+from rest_framework.response import Response
 from .models import Empresa, Cliente, Producto, MaeFactura, DetFactura
 from .serializers import EmpresaSerializer, ClienteSerializer, ProductoSerializer, MaeFacturaSerializer, DetFacturaSerializer
 
@@ -24,3 +27,9 @@ class MaeFacturaViewSet(viewsets.ModelViewSet):
 class DetFacturaViewSet(viewsets.ModelViewSet):
     queryset = DetFactura.objects.all()
     serializer_class = DetFacturaSerializer
+
+class ClientesPorEmpresa(APIView):
+    def get(self, request, empresa_id):
+        clientes = get_list_or_404(Cliente, empresa=empresa_id)
+        serializer = ClienteSerializer(clientes, many=True)
+        return Response(serializer.data)
