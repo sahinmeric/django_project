@@ -6,6 +6,7 @@ import ProductoCatalog from "./components/ProductoCatalog";
 import FacturaList from "./components/FacturaList";
 import NewFactura from "./components/NewFactura";
 import FacturaDetail from "./components/FacturaDetail";
+import EditFactura from "./components/EditFactura";
 
 const App: React.FC = () => {
   return (
@@ -18,6 +19,7 @@ const App: React.FC = () => {
         <Route path="/facturas" element={<FacturaList />} />
         <Route path="/new-factura" element={<NewFactura />} />
         <Route path="/factura/:id" element={<FacturaDetail />} />
+        <Route path="/factura/:id/edit" element={<EditFactura />} />
       </Routes>
     </Router>
   );
