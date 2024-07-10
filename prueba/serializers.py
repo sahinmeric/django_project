@@ -21,8 +21,9 @@ class MaeFacturaSerializer(serializers.ModelSerializer):
         model = MaeFactura
         fields = '__all__'
         extra_kwargs = {
-            'fecha_auditoria': {'required': False},  # Mark this field as not required
-            'id_factura': {'required': False},  # Assuming this is auto-generated
+            'fecha_auditoria': {'required': False},
+            'id_factura': {'required': False},
+            'numero': {'required': False, 'read_only': True}  # Make it read-only
         }
 
     def create(self, validated_data):

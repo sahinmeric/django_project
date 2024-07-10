@@ -4,12 +4,11 @@ import api from "../services/api";
 import { MaeFactura } from "../types";
 
 const NewFactura: React.FC = () => {
-  const [empresa, setEmpresa] = useState<number>(1);
-  const [numero, setNumero] = useState<number>(1001);
-  const [fechaFactura, setFechaFactura] = useState<string>("2024-07-10");
-  const [idCliente, setIdCliente] = useState<number>(830003564);
-  const [observaciones, setObservaciones] = useState<string>("Test invoice");
-  const [total, setTotal] = useState<number>(2500.0);
+  const [empresa, setEmpresa] = useState<number>();
+  const [fechaFactura, setFechaFactura] = useState<string>();
+  const [idCliente, setIdCliente] = useState<number>();
+  const [observaciones, setObservaciones] = useState<string>();
+  const [total, setTotal] = useState<number>();
   const navigate = useNavigate();
 
   const handleSubmit = (event: React.FormEvent) => {
@@ -17,7 +16,6 @@ const NewFactura: React.FC = () => {
 
     const newFactura: Partial<MaeFactura> = {
       empresa,
-      numero,
       fecha_factura: fechaFactura,
       id_cliente: idCliente,
       observaciones,
@@ -57,14 +55,6 @@ const NewFactura: React.FC = () => {
           />
         </label>
         <br />
-        <label>
-          Numero:
-          <input
-            type="number"
-            value={numero}
-            onChange={(e) => setNumero(Number(e.target.value))}
-          />
-        </label>
         <br />
         <label>
           Fecha Factura:

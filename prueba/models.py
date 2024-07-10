@@ -43,9 +43,9 @@ class Producto(models.Model):
         return self.nombre
 
 class MaeFactura(models.Model):
-    empresa = models.ForeignKey('Empresa', on_delete=models.CASCADE, db_column='EMPRESA')
+    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, db_column='EMPRESA')
     id_factura = models.AutoField(primary_key=True, db_column='ID_FACTURA')
-    numero = models.IntegerField(db_column='NUMERO')
+    numero = models.IntegerField(db_column='NUMERO', editable=False)  # Make it non-editable
     fecha_factura = models.DateTimeField(db_column='FECHA_FACTURA')
     id_cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, db_column='ID_CLIENTE')
     observaciones = models.TextField(db_column='OBSERVACIONES', blank=True, null=True)
