@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   Typography,
-  CircularProgress,
   Stack,
   FormControl,
   InputLabel,
@@ -13,6 +12,7 @@ import {
 } from "@mui/material";
 import api from "../services/api";
 import { Empresa, Cliente } from "../types";
+import Loader from "./Loader";
 
 const EmpresaList: React.FC = () => {
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
@@ -46,32 +46,30 @@ const EmpresaList: React.FC = () => {
       });
   };
 
-  if (loading) {
-    return (
-      <Stack alignItems={"center"} sx={{ mt: 20 }}>
-        <CircularProgress />
-      </Stack>
-    );
-  }
+  if (loading) return <Loader />;
 
   return (
-    <Stack alignItems={"center"} sx={{ mt: 8 }} spacing={2}>
-      <FormControl fullWidth>
-        <InputLabel id="empresa-select-label">Empresa</InputLabel>
-        <Select
-          labelId="empresa-select-label"
-          id="empresa-select"
-          value={selectedEmpresa}
-          label="Empresa"
-          onChange={handleEmpresaChange}
-        >
-          {empresas.map((empresa) => (
-            <MenuItem key={empresa.empresa} value={empresa.empresa}>
-              {empresa.nombre}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+    <Stack alignItems={"center"} sx={{ mt: 6 }} spacing={2}>
+      <Stack>
+        <FormControl sx={{ width: 300 }}>
+          <InputLabel id="empresa-select-label" variant="standard">
+            Empresa
+          </InputLabel>
+          <Select
+            labelId="empresa-select-label"
+            id="empresa-select"
+            value={selectedEmpresa}
+            label="Empresa"
+            onChange={handleEmpresaChange}
+          >
+            {empresas.map((empresa) => (
+              <MenuItem key={empresa.empresa} value={empresa.empresa}>
+                {empresa.nombre}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Stack>
       {selectedEmpresa && (
         <Stack maxWidth="md" sx={{ mt: 8 }}>
           <Stack alignSelf={"center"} m={2}>
