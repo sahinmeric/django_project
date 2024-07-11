@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
+  Container,
   Typography,
   Card,
   CardContent,
+  CardActionArea,
+  CircularProgress,
   Stack,
   IconButton,
 } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
 import api from "../services/api";
 import { MaeFactura } from "../types";
-import Loader from "./Loader";
-import EditIcon from "@mui/icons-material/Edit";
-import { useNavigate } from "react-router-dom";
 
 const FacturaList: React.FC = () => {
   const [facturas, setFacturas] = useState<MaeFactura[]>([]);
@@ -30,22 +32,34 @@ const FacturaList: React.FC = () => {
       });
   }, []);
 
-  const handleEditClick = (id: number) => {
-    navigate(`/factura/${id}/edit`);
+  const handleFacturaClick = (facturaId: number) => {
+    navigate(`/factura/${facturaId}`);
   };
 
-  if (loading) return <Loader />;
+  const handleEditClick = (facturaId: number) => {
+    navigate(`/factura/${facturaId}/edit`);
+  };
+
+  if (loading) {
+    return (
+      <Stack alignItems={"center"} sx={{ mt: 20 }}>
+        <CircularProgress />
+      </Stack>
+    );
+  }
 
   return (
-    <Stack alignItems={"center"} sx={{ mt: 6 }} spacing={2}>
-      <Stack alignSelf={"center"} maxWidth="md" sx={{ m: 2 }}>
-        <Typography variant="h6">FACTURAS</Typography>
-      </Stack>
-      <Stack alignContent={"center"} spacing={2}>
+    <Container component="main" maxWidth="md" sx={{ mt: 8 }}>
+      <Typography variant="h4" component="h2" gutterBottom>
+        FACTURAS
+      </Typography>
+      <Stack spacing={2}>
         {facturas.map((factura) => (
-          <Card key={factura.id_factura} sx={{ mb: 2, width: 300 }}>
-            <CardContent>
-              <Stack>
+          <Card key={factura.id_factura}>
+            <CardActionArea
+              onClick={() => handleFacturaClick(factura.id_factura)}
+            >
+              <CardContent>
                 <Typography variant="h6" component="h3">
                   Factura #{factura.numero}
                 </Typography>
@@ -60,22 +74,19 @@ const FacturaList: React.FC = () => {
                   <strong>Observaciones:</strong> {factura.observaciones}
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
-                  <strong>Total:</strong> ${factura.total}
+                  <strong>Total:</strong> ${Number(factura.total).toFixed(2)}
                 </Typography>
-                <Stack alignItems={"center"}>
-                  <IconButton
-                    onClick={() => handleEditClick(factura.id_factura)}
-                    aria-label="edit"
-                  >
-                    <EditIcon />
-                  </IconButton>
-                </Stack>
-              </Stack>
+              </CardContent>
+            </CardActionArea>
+            <CardContent>
+              <IconButton onClick={() => handleEditClick(factura.id_factura)}>
+                <EditIcon />
+              </IconButton>
             </CardContent>
           </Card>
         ))}
       </Stack>
-    </Stack>
+    </Container>
   );
 };
 
