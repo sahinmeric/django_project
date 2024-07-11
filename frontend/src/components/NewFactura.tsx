@@ -1,7 +1,15 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {
+  Container,
+  TextField,
+  Button,
+  Typography,
+  CircularProgress,
+  Stack,
+} from "@mui/material";
 import api from "../services/api";
 import { MaeFactura } from "../types";
+import { useNavigate } from "react-router-dom";
 
 const NewFactura: React.FC = () => {
   const [empresa, setEmpresa] = useState<number>();
@@ -9,10 +17,13 @@ const NewFactura: React.FC = () => {
   const [idCliente, setIdCliente] = useState<number>();
   const [observaciones, setObservaciones] = useState<string>();
   const [total, setTotal] = useState<number>();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
+    setLoading(true);
 
     const newFactura: Partial<MaeFactura> = {
       empresa,
@@ -25,74 +36,70 @@ const NewFactura: React.FC = () => {
     api
       .post("facturas/", newFactura)
       .then((response) => {
-        console.log("Factura created successfully:", response.data);
+        setLoading(false);
         navigate("/facturas");
       })
       .catch((error) => {
         if (error.response) {
-          console.error("Error response:", error.response);
-          console.error("Error data:", error.response.data);
-          console.error("Error status:", error.response.status);
+          setError(error.response.data.detail);
         } else {
           console.error(
             "There was an error creating the factura!",
             error.message
           );
+          setLoading(false);
         }
       });
   };
 
   return (
-    <div>
-      <h1>Create New Factura</h1>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Empresa:
-          <input
-            type="number"
-            value={empresa}
-            onChange={(e) => setEmpresa(Number(e.target.value))}
-          />
-        </label>
-        <br />
-        <br />
-        <label>
-          Fecha Factura:
-          <input
-            type="date"
-            value={fechaFactura}
-            onChange={(e) => setFechaFactura(e.target.value)}
-          />
-        </label>
-        <br />
-        <label>
-          Cliente ID:
-          <input
-            type="number"
-            value={idCliente}
-            onChange={(e) => setIdCliente(Number(e.target.value))}
-          />
-        </label>
-        <br />
-        <label>
-          Observaciones:
-          <textarea
-            value={observaciones}
-            onChange={(e) => setObservaciones(e.target.value)}
-          />
-        </label>
-        <br />
-        <label>
-          Total:
-          <input
-            type="number"
-            value={total}
-            onChange={(e) => setTotal(Number(e.target.value))}
-          />
-        </label>
-        <button type="submit">Create Factura</button>
-      </form>
-    </div>
+    <Container component="main" maxWidth="xs">
+      <Stack alignItems={"center"} sx={{ mt: 8 }} spacing={2}>
+        <Typography variant="h5">Create New Factura</Typography>
+        <form onSubmit={handleSubmit}>
+          <Stack spacing={2}>
+            <TextField
+              label="Empresa"
+              value={empresa}
+              onChange={(e) => setEmpresa(parseInt(e.target.value))}
+              required
+            />
+            <TextField
+              label="Cliente"
+              value={idCliente}
+              onChange={(e) => setIdCliente(parseInt(e.target.value))}
+              required
+            />
+            <TextField
+              label="Fecha"
+              type="date"
+              value={fechaFactura}
+              onChange={(e) => setFechaFactura(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              required
+            />
+            <TextField
+              label="Observaciones"
+              value={observaciones}
+              onChange={(e) => setObservaciones(e.target.value)}
+              multiline
+              rows={4}
+            />
+            <TextField
+              label="Total"
+              type="number"
+              value={total}
+              onChange={(e) => setTotal(parseInt(e.target.value))}
+              required
+            />
+            {error && <Typography color="error">{error}</Typography>}
+            <Button type="submit" variant="contained" color="primary">
+              {loading ? <CircularProgress size={24} /> : "Create Factura"}
+            </Button>
+          </Stack>
+        </form>
+      </Stack>
+    </Container>
   );
 };
 
