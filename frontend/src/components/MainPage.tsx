@@ -1,6 +1,5 @@
-// src/MainPage.tsx
 import React from "react";
-import { Typography, Button, Container, Box } from "@mui/material";
+import { Button, Container, Box } from "@mui/material";
 import { Link } from "react-router-dom";
 
 const MainPage = () => {
