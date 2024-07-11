@@ -1,78 +1,125 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import {
+  Typography,
+  CircularProgress,
+  Stack,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
+  Grid,
+  Paper,
+} from "@mui/material";
 import api from "../services/api";
 import { Empresa, Cliente } from "../types";
 
-const EmpresaList = () => {
+const EmpresaList: React.FC = () => {
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
-  const [selectedEmpresa, setSelectedEmpresa] = useState<Empresa | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedEmpresa, setSelectedEmpresa] = useState<number | string>("");
   const [clientes, setClientes] = useState<Cliente[]>([]);
 
   useEffect(() => {
-    fetchEmpresas();
-  }, []);
-
-  useEffect(() => {
-    if (selectedEmpresa) {
-      fetchClientesForEmpresa(selectedEmpresa.empresa);
-    }
-  }, [selectedEmpresa]);
-
-  const fetchEmpresas = () => {
     api
       .get<Empresa[]>("empresas/")
       .then((response) => {
         setEmpresas(response.data);
-        setSelectedEmpresa(response.data[0] || null);
+        setLoading(false);
       })
-      .catch((error) => console.error("Error fetching empresas", error));
-  };
+      .catch((error) => {
+        console.error("There was an error fetching the empresas!", error);
+        setLoading(false);
+      });
+  }, []);
 
-  const fetchClientesForEmpresa = (empresaId: number) => {
+  const handleEmpresaChange = (event: SelectChangeEvent<string | number>) => {
+    const empresaId = event.target.value as number;
+    setSelectedEmpresa(empresaId);
     api
-      .get<Cliente[]>(`clientes/empresa/${empresaId}`)
+      .get<Cliente[]>(`clientes/empresa/${empresaId}/`)
       .then((response) => {
         setClientes(response.data);
       })
-      .catch((error) => console.error("Error fetching clients", error));
+      .catch((error) => {
+        console.error("There was an error fetching the clients!", error);
+      });
   };
 
-  const handleSelectEmpresa = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const empresaId = parseInt(event.target.value, 10);
-    const selected = empresas.find((empresa) => empresa.empresa === empresaId);
-    setSelectedEmpresa(selected || null);
-  };
+  if (loading) {
+    return (
+      <Stack alignItems={"center"} sx={{ mt: 20 }}>
+        <CircularProgress />
+      </Stack>
+    );
+  }
 
   return (
-    <div>
-      <h1>Company List</h1>
-      <select
-        onChange={handleSelectEmpresa}
-        value={selectedEmpresa?.empresa || ""}
-      >
-        {empresas.map((empresa) => (
-          <option key={empresa.empresa} value={empresa.empresa}>
-            {empresa.nombre}
-          </option>
-        ))}
-      </select>
+    <Stack alignItems={"center"} sx={{ mt: 8 }} spacing={2}>
+      <FormControl fullWidth>
+        <InputLabel id="empresa-select-label">Empresa</InputLabel>
+        <Select
+          labelId="empresa-select-label"
+          id="empresa-select"
+          value={selectedEmpresa}
+          label="Empresa"
+          onChange={handleEmpresaChange}
+        >
+          {empresas.map((empresa) => (
+            <MenuItem key={empresa.empresa} value={empresa.empresa}>
+              {empresa.nombre}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
       {selectedEmpresa && (
-        <div>
-          <h2>Details for {selectedEmpresa.nombre}</h2>
-          <h3>Clients</h3>
-          {clientes.length > 0 ? (
-            <ul>
-              {clientes.map((cliente) => (
-                <li key={cliente.id_cliente}>
-                  {cliente.nombre} - {cliente.telefono}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No clients found for this company.</p>
-          )}
-        </div>
+        <Stack maxWidth="md" sx={{ mt: 8 }}>
+          <Stack alignSelf={"center"} m={2}>
+            <Typography variant="h6">CLIENTES</Typography>
+          </Stack>
+          <Grid container spacing={3} justifyContent="center">
+            {clientes.map((cliente) => (
+              <Grid item xs={12} sm={6} md={4} key={cliente.id_cliente}>
+                <Paper
+                  elevation={3}
+                  sx={{
+                    padding: 2,
+                    height: 350,
+                  }}
+                >
+                  <Typography variant="h6">{cliente.nombre}</Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    <strong>ID:</strong> {cliente.id_cliente}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    <strong>Tipo:</strong> {cliente.tipo}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    <strong>Teléfono:</strong> {cliente.telefono}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    <strong>Correo:</strong> {cliente.correo.toLowerCase()}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    <strong>Dirección:</strong> {cliente.direccion}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    <strong>Página Web:</strong> {cliente.paginaweb}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    <strong>Fecha de Creación:</strong>{" "}
+                    {new Date(cliente.fecha_creacion).toLocaleDateString()}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    <strong>Estado:</strong> {cliente.estado}
+                  </Typography>
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+        </Stack>
       )}
-    </div>
+    </Stack>
   );
 };
 

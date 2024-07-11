@@ -6,24 +6,21 @@ import { Link } from "react-router-dom";
 const MainPage = () => {
   return (
     <Container component="main" maxWidth="sm" sx={{ mt: 8 }}>
-      <Typography variant="h2" component="h1" gutterBottom>
-        Main Dashboard
-      </Typography>
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <Button variant="contained" component={Link} to="/empresas">
-          View Companies
+          EMPRESAS
         </Button>
         <Button variant="contained" component={Link} to="/clientes">
-          View Clients
+          CLIENTES
         </Button>
         <Button variant="contained" component={Link} to="/productos">
-          View Products
+          PRODUCTOS
         </Button>
         <Button variant="contained" component={Link} to="/facturas">
-          View Invoices
+          FACTURAS
         </Button>
         <Button variant="outlined" component={Link} to="/new-factura">
-          Create New Invoice
+          CREAR NUEVA FACTURA
         </Button>
       </Box>
     </Container>
