@@ -1,23 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  CircularProgress,
+  Stack,
+} from "@mui/material";
 import api from "../services/api";
-import { MaeFactura, DetFactura } from "../types";
+import { MaeFactura } from "../types";
 import { formatDate } from "../utils/utils";
 
 const EditFactura: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [factura, setFactura] = useState<MaeFactura | null>(null);
-  const [detalles, setDetalles] = useState<DetFactura[]>([]);
-  const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     api
       .get(`facturas/${id}/`)
       .then((response) => {
         setFactura(response.data);
-        setDetalles(response.data.detalles || []); // Ensure detalles is an array
         setLoading(false);
       })
       .catch((error) => {
@@ -33,31 +39,12 @@ const EditFactura: React.FC = () => {
     }
   };
 
-  const handleDetalleChange = (index: number, field: string, value: any) => {
-    const newDetalles = [...detalles];
-    newDetalles[index] = { ...newDetalles[index], [field]: value };
-    setDetalles(newDetalles);
-  };
-
   const handleSave = () => {
     if (factura) {
       api
         .put(`facturas/${factura.id_factura}/`, factura)
-        .then((response) => {
-          detalles.forEach((detalle) => {
-            api
-              .put(`detalle-facturas/${detalle.consecutivo}/`, detalle)
-              .then(() => {
-                console.log("Detalle updated successfully");
-              })
-              .catch((error) => {
-                console.error(
-                  "There was an error updating the detalle!",
-                  error
-                );
-              });
-          });
-          navigate(`/factura/${factura.id_factura}`);
+        .then(() => {
+          navigate(`/facturas`);
         })
         .catch((error) => {
           console.error("There was an error updating the factura!", error);
@@ -66,7 +53,11 @@ const EditFactura: React.FC = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <Stack alignItems={"center"} sx={{ mt: 20 }}>
+        <CircularProgress />
+      </Stack>
+    );
   }
 
   if (error) {
@@ -78,77 +69,42 @@ const EditFactura: React.FC = () => {
   }
 
   return (
-    <div>
-      <h1>Edit Factura</h1>
-      <label>
-        Numero:
-        <input
-          type="number"
-          value={factura.numero}
-          onChange={(e) => handleInputChange("numero", e.target.value)}
-        />
-      </label>
-      <label>
-        Fecha Factura:
-        <input
+    <Container component="main" maxWidth="sm" sx={{ mt: 8 }}>
+      <Typography variant="h4" component="h2" gutterBottom>
+        Edit Factura
+      </Typography>
+      <Stack spacing={2}>
+        <TextField
+          label="Fecha Factura"
           type="date"
+          InputLabelProps={{ shrink: true }}
           value={formatDate(factura.fecha_factura)}
           onChange={(e) => handleInputChange("fecha_factura", e.target.value)}
         />
-      </label>
-      <label>
-        Cliente ID:
-        <input
+        <TextField
+          label="Empresa"
           type="number"
-          value={factura.id_cliente}
-          onChange={(e) => handleInputChange("id_cliente", e.target.value)}
+          value={factura.empresa}
+          onChange={(e) => handleInputChange("empresa", e.target.value)}
         />
-      </label>
-      <label>
-        Observaciones:
-        <textarea
+        <TextField
+          label="Observaciones"
+          multiline
+          rows={4}
           value={factura.observaciones}
           onChange={(e) => handleInputChange("observaciones", e.target.value)}
         />
-      </label>
-      <label>
-        Total:
-        <input
+        <TextField
+          label="Total"
           type="number"
           value={factura.total}
           onChange={(e) => handleInputChange("total", e.target.value)}
         />
-      </label>
-
-      <h2>Detalles</h2>
-      <ul>
-        {detalles.length > 0 ? (
-          detalles.map((detalle, index) => (
-            <li key={detalle.consecutivo}>
-              <label>Producto: {detalle.id_producto}</label>
-              <input
-                type="number"
-                value={detalle.cantidad}
-                onChange={(e) =>
-                  handleDetalleChange(index, "cantidad", e.target.value)
-                }
-              />
-              <input
-                type="number"
-                value={detalle.precio}
-                onChange={(e) =>
-                  handleDetalleChange(index, "precio", e.target.value)
-                }
-              />
-              <input type="number" value={detalle.sub_total} readOnly />
-            </li>
-          ))
-        ) : (
-          <li>No detalles found.</li>
-        )}
-      </ul>
-      <button onClick={handleSave}>Save Changes</button>
-    </div>
+        <Button variant="contained" color="primary" onClick={handleSave}>
+          Save Changes
+        </Button>
+      </Stack>
+    </Container>
   );
 };
 
