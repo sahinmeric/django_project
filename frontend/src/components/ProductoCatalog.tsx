@@ -47,14 +47,11 @@ const ProductoCatalog: React.FC = () => {
       </Stack>
       <List>
         {productos.map((producto) => (
-          <Card sx={{ mb: 2 }}>
-            <ListItem
-              onClick={() => handleExpandClick(producto.id_producto)}
-              key={`list-item-${producto.id_producto}`}
-            >
+          <Card key={producto.producto} sx={{ mb: 2 }}>
+            <ListItem onClick={() => handleExpandClick(producto.producto)}>
               <ListItemText primary={producto.nombre} />
               <IconButton>
-                {expanded === producto.id_producto ? (
+                {expanded === producto.producto ? (
                   <ExpandLessIcon />
                 ) : (
                   <ExpandMoreIcon />
@@ -62,10 +59,9 @@ const ProductoCatalog: React.FC = () => {
               </IconButton>
             </ListItem>
             <Collapse
-              in={expanded === producto.id_producto}
+              in={expanded === producto.producto}
               timeout="auto"
               unmountOnExit
-              key={`collapse-${producto.id_producto}`}
             >
               <CardContent>
                 <Typography variant="body2" color="textSecondary">

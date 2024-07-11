@@ -21,7 +21,7 @@ export interface Cliente {
 export interface Producto {
   id_producto: number;
   empresa: number;
-  producto: string;
+  producto: number;
   nombre: string;
   tipo: string;
   fotoproducto: string;
