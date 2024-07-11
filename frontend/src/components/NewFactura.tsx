@@ -55,17 +55,17 @@ const NewFactura: React.FC = () => {
   return (
     <Container component="main" maxWidth="xs">
       <Stack alignItems={"center"} sx={{ mt: 8 }} spacing={2}>
-        <Typography variant="h5">Create New Factura</Typography>
+        <Typography variant="h5">Crear nueva factura</Typography>
         <form onSubmit={handleSubmit}>
           <Stack spacing={2}>
             <TextField
-              label="Empresa"
+              label="No. Empresa"
               value={empresa}
               onChange={(e) => setEmpresa(parseInt(e.target.value))}
               required
             />
             <TextField
-              label="Cliente"
+              label="No. Cliente"
               value={idCliente}
               onChange={(e) => setIdCliente(parseInt(e.target.value))}
               required
@@ -94,7 +94,7 @@ const NewFactura: React.FC = () => {
             />
             {error && <Typography color="error">{error}</Typography>}
             <Button type="submit" variant="contained" color="primary">
-              {loading ? <CircularProgress size={24} /> : "Create Factura"}
+              {loading ? <CircularProgress size={24} /> : "Crear factura"}
             </Button>
           </Stack>
         </form>
